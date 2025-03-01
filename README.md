@@ -30,7 +30,7 @@ This Google Apps Script-based system automates the creation of high-quality blog
   - Records post details in Google Sheets for monitoring and analysis
 
 - **Automation**:
-  - Runs on configurable schedule (daily, weekly)
+  - Runs on configurable schedule (daily, weekly, hourly, minutely)
   - Handles errors gracefully with detailed logging
   - Works completely unattended once set up
 
@@ -67,7 +67,7 @@ This Google Apps Script-based system automates the creation of high-quality blog
 
 ### 4. Set Up Google Sheets
 
-1. Open the Google Sheet with the ID in your configuration (`1JUURp3h1A114GnOVyB53uCWPY5ZsuAIwLzsAfBbSoYQ`)
+1. Open the Google Sheet with the ID in your configuration
 2. If you want to use a different sheet:
    - Create a new Google Sheet
    - Share it with edit permissions to your Google Apps Script service account
@@ -129,7 +129,7 @@ When you try to authorize the application, you might encounter a `redirect_uri_m
 1. Run the `setup` function from the Apps Script editor
 2. This will:
    - Ensure your sheets are properly initialized
-   - Set up the automatic trigger based on your configuration (daily/weekly)
+   - Set up the automatic trigger based on your configuration (daily/weekly/hourly/minutely)
 
 ## Obtaining API Keys and Credentials
 
@@ -176,17 +176,6 @@ When you try to authorize the application, you might encounter a `redirect_uri_m
 5. Sign in with your Google account and grant the requested permissions for Blogger access.
 6. You'll be redirected to a success page when complete.
 7. The refresh token will be stored in the script's properties.
-8. To retrieve the refresh token, you can run a function that logs the refresh token. For example:
-
-```javascript
-function logRefreshToken() {
-  const scriptProperties = PropertiesService.getScriptProperties();
-  const refreshToken = scriptProperties.getProperty('BLOGGER_REFRESH_TOKEN');
-  Logger.log(`Refresh Token: ${refreshToken}`);
-}
-```
-9. Run the `logRefreshToken` function from the Apps Script editor to see the refresh token in the logs.
-10. Update the `BLOGGER_REFRESH_TOKEN` in the `CONFIG` object in `BlogAutomation.gs` with the retrieved refresh token.
 
 ### Google Sheets ID
 
