@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Post Creator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4cc9f0;
+            --text-color: #333;
+            --light-gray: #f8f9fa;
+            --border-color: #e0e0e0;
+            --success-color: #4CAF50;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fa;
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+            font-size: 28px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        input[type="text"], textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            transition: border 0.3s, box-shadow 0.3s;
+        }
+        
+        input[type="text"]:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.2);
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        button:disabled {
+            background-color: #a0a0a0;
+            cursor: not-allowed;
+        }
+        
+        #loading {
+            display: none;
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: var(--light-gray);
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top: 4px solid var(--accent-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1.5s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        #statusMessage {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+        
+        .progress-bar-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: var(--accent-color);
+            width: 0%;
+            border-radius: 10px;
+            transition: width 0.5s;
+        }
+        
+        .form-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .form-icon {
+            font-size: 24px;
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #888;
+        }
+        
+        .capbox {
+            background-color: #f8f9fa;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 25px;
+        }
+
+        #CaptchaDiv {
+            color: #000000;
+            font: normal 25px 'Poppins', sans-serif;
+            font-style: italic;
+            text-align: center;
+            background-color: #FFFFFF;
+            user-select: none;
+            display: inline-block;
+            padding: 8px 20px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+
+        .capbox-inner {
+            font-size: 14px;
+            color: #555;
+        }
+
+        #CaptchaInput {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-top: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            transition: border 0.3s, box-shadow 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✨ Create a New Blog Post</h1>
+        
+        <form id="blogForm" action="https://script.google.com/macros/s/DEPLOYED_SCRIPT_ID/exec" method="get">
+            <input type="hidden" name="accessKey" value="ACCESS_KEY_HERE">
+            <input type="hidden" name="redirect" value="true">
+            
+            <div class="form-group">
+                <label for="title">📝 Post Title:</label>
+                <input type="text" id="title" name="title" placeholder="Enter an engaging title..." required>
+            </div>
+            
+            <div class="form-group">
+                <label for="description">📄 Description:</label>
+                <textarea id="description" name="description" rows="4" placeholder="Write a brief description of your post..." required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="contentType">🏷️ Content Type:</label>
+                <select id="contentType" name="contentType" required>
+                    <option value="" disabled selected>Select a content type...</option>
+                    <option value="how-to">How-To Guide</option>
+                    <option value="tutorial">Tutorial</option>
+                    <option value="review">Review</option>
+                    <option value="article">Article</option>
+                    <option value="news">News</option>
+                </select>
+            </div>
+            
+            <!-- START CAPTCHA -->
+            <div class="form-group">
+                <label for="captcha">Security Check:</label>
+                <div class="capbox">
+                    <div id="CaptchaDiv"></div>
+                    <div class="capbox-inner">
+                        Type the number shown above:<br>
+                        <input type="hidden" id="txtCaptcha" name="txtCaptcha">
+                        <input type="text" id="CaptchaInput" name="CaptchaInput" placeholder="Enter the number" required>
+                    </div>
+                </div>
+            </div>
+            <!-- END CAPTCHA -->
+            
+            <button type="submit" id="submitBtn">Create Post</button>
+        </form>
+        
+        <div id="loading">
+            <div class="spinner"></div>
+            <p id="statusMessage">Initializing blog post creation...</p>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+        </div>
+        
+        <footer>
+            Your post will be created and you'll be redirected to view it.
+        </footer>
+    </div>
+
+    <script>
+        // Captcha Script
+        function generateCaptcha() {
+            var num1 = Math.floor(Math.random() * 10) + 1;
+            var num2 = Math.floor(Math.random() * 10) + 1;
+            var captchaCode = num1 + " + " + num2;
+            document.getElementById('CaptchaDiv').innerHTML = captchaCode;
+            document.getElementById('txtCaptcha').value = num1 + num2;
+        }
+
+        function validateCaptcha() {
+            var str1 = document.getElementById('txtCaptcha').value;
+            var str2 = document.getElementById('CaptchaInput').value;
+            if (str1 == str2) {
+                return true;
+            } else {
+                alert("Verify CAPTCHA! Addition it is :)");
+                generateCaptcha();
+                return false;
+            }
+        }
+
+        // Generate captcha when page loads
+        window.onload = function() {
+            generateCaptcha();
+        };
+
+        document.getElementById('blogForm').addEventListener('submit', function(e) {
+            // Validate captcha first
+            if (!validateCaptcha()) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Show loading indicator
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('submitBtn').disabled = true;
+            
+            // Start progress bar animation
+            let progress = 0;
+            const progressBar = document.getElementById('progressBar');
+            
+            const updateProgress = () => {
+                if (progress < 95) {
+                    progress += Math.random() * 5 + 1;
+                    progressBar.style.width = Math.min(progress, 95) + '%';
+                    setTimeout(updateProgress, 500);
+                }
+            };
+            
+            updateProgress();
+            
+            // Update status messages to show progress
+            const statusMessages = [
+                "Initializing blog post creation...",
+                "Preparing your content for publishing...",
+                "Generating SEO-friendly format...",
+                "Optimizing your post for readers...",
+                "Almost there! Finalizing your blog post...",
+                "Just a moment more, setting up redirects..."
+            ];
+            
+            const statusElement = document.getElementById('statusMessage');
+            
+            statusMessages.forEach((message, index) => {
+                setTimeout(() => {
+                    statusElement.textContent = message;
+                    // When we reach the last message, set progress to 95%
+                    if (index === statusMessages.length - 1) {
+                        progressBar.style.width = '95%';
+                    }
+                }, (index + 1) * 2000);
+            });
+            
+            // Form will continue submitting normally
+        });
+    </script>
+</body>
+</html>
