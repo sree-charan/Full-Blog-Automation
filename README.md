@@ -34,6 +34,18 @@ This Google Apps Script-based system automates the creation of high-quality blog
   - Handles errors gracefully with detailed logging
   - Works completely unattended once set up
 
+- **Custom Question API Endpoint**:
+  - Generate blog posts from custom topics via a REST API
+  - Submit custom questions or topics from any external application
+  - Access the system programmatically without needing to use the Apps Script editor
+  - Support for both GET and POST requests
+
+- **Custom Blog Creator UI**:
+  - User-friendly HTML interface for creating blog posts
+  - Simple form that can be hosted anywhere
+  - No coding required for end-users to create posts
+  - Security features including CAPTCHA verification
+
 ## Setup Instructions
 
 ### 1. Create a New Google Apps Script Project
@@ -205,6 +217,135 @@ Once set up, the system will:
 5. Post to your Blogger blog
 6. Log the details in your tracking sheets
 
+### Using the Custom Topic API Endpoint
+
+To generate a blog post from a custom topic via the API endpoint:
+
+#### Using Simple GET Request (Easiest Method)
+
+You can generate a blog post by simply visiting a URL in your browser:
+
+```
+https://script.google.com/macros/s/YOUR_DEPLOYED_SCRIPT_ID/exec?accessKey=YOUR_API_KEY&title=How%20to%20Build%20a%20Smart%20Home%20System&description=Focus%20on%20budget-friendly%20options&contentType=how-to
+```
+
+Required parameters:
+- `accessKey`: Your API access key for authentication
+- `title`: The custom topic/question for the blog post
+
+Optional parameters:
+- `description`: Additional context or details about the topic
+- `contentType`: Specify the content type ('how-to', 'listicle', 'opinion', or 'industry-insight')
+
+This is the simplest way to generate a blog post - just paste the URL into your browser and the system will create and publish a blog post based on your topic.
+
+#### Using HTTP POST with URL Parameters
+
+```
+POST https://script.google.com/macros/s/YOUR_DEPLOYED_SCRIPT_ID/exec
+```
+
+Parameters:
+- `accessKey` (required): Your API access key for authentication
+- `title` (required): The custom topic/question for the blog post
+- `description` (optional): Additional context or details about the topic
+- `contentType` (optional): Specify the content type ('how-to', 'listicle', 'opinion', or 'industry-insight')
+
+Example using curl:
+```bash
+curl -X POST "https://script.google.com/macros/s/YOUR_DEPLOYED_SCRIPT_ID/exec?accessKey=YOUR_API_KEY&title=How%20to%20Build%20a%20Smart%20Home%20System&description=Focus%20on%20budget-friendly%20options&contentType=how-to"
+```
+
+#### Using HTTP POST with JSON Body
+
+```
+POST https://script.google.com/macros/s/YOUR_DEPLOYED_SCRIPT_ID/exec?accessKey=YOUR_API_KEY
+Content-Type: application/json
+```
+
+JSON Body:
+```json
+{
+  "title": "How to Build a Smart Home System",
+  "description": "Focus on budget-friendly options",
+  "contentType": "how-to"
+}
+```
+
+Example using curl:
+```bash
+curl -X POST "https://script.google.com/macros/s/YOUR_DEPLOYED_SCRIPT_ID/exec?accessKey=YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"title":"How to Build a Smart Home System","description":"Focus on budget-friendly options","contentType":"how-to"}'
+```
+
+#### API Response
+
+Successful response:
+```json
+{
+  "success": true,
+  "title": "10 Budget-Friendly Ways to Build a Smart Home System in 2023",
+  "url": "https://yourblog.blogspot.com/2023/05/budget-friendly-smart-home-system.html",
+  "keywords": ["smart home", "budget", "automation", "IoT", "DIY"]
+}
+```
+
+Error response:
+```json
+{
+  "success": false,
+  "error": "Error message details"
+}
+```
+
+#### Testing the API
+
+You can test if your API endpoint is working by sending a GET request to the URL without any parameters:
+```
+GET https://script.google.com/macros/s/YOUR_DEPLOYED_SCRIPT_ID/exec
+```
+
+This will return a simple JSON response confirming the API is active.
+
+### Using the Custom Blog Creator UI
+
+The system includes a user-friendly HTML interface (`local.html`) that you can use to create blog posts through the API without having to manually construct URLs or API calls.
+
+#### Setting Up the UI
+
+1. Open the `local.html` file in a text editor
+2. Replace `DEPLOYED_SCRIPT_ID` with your actual deployed Apps Script ID
+3. Replace `ACCESS_KEY_HERE` with your API access key
+4. You can host this HTML file anywhere (local computer, web server, GitHub Pages, etc.)
+
+#### Using the UI
+
+1. Open the HTML file in a web browser
+2. Fill in the form:
+   - **Post Title**: The main topic or title for your blog post
+   - **Description**: Additional details or context to guide content generation
+   - **Content Type**: Select the type of content (how-to, tutorial, review, etc.)
+   - **Security Check**: Complete the CAPTCHA (simple addition)
+3. Click "Create Post" to submit
+4. The page will show a loading animation while the blog post is being created
+5. Once complete, you'll be automatically redirected to view your published blog post
+
+#### Customizing the UI
+
+You can customize the UI by modifying the `local.html` file:
+- Change colors by updating the CSS variables at the top
+- Modify the form fields to add or remove options
+- Adjust the loading animation and progress bar
+- Change the text and styling to match your brand
+
+#### Security Features
+
+The UI includes a simple CAPTCHA to prevent automated submissions:
+- A random addition problem is generated
+- User must solve the math problem to submit the form
+- This helps prevent abuse of your API endpoint
+
 ### Tracking and Monitoring
 
 Monitor your automation through:
@@ -278,3 +419,23 @@ To change how often posts are created:
 - Uses Google Gemini API for content generation
 - Uses Pexels API for image selection
 - Uses Google OAuth2 library for Blogger authentication
+
+## Understanding the Files
+
+### BlogAutomation.gs
+Main script that orchestrates the entire system. Contains configuration settings, trigger management, and setup functions.
+
+### TopicSelection.gs
+Handles the selection or generation of blog post topics from RSS feeds or AI.
+
+### ContentGeneration.gs
+Generates blog post content using the Google Gemini API based on selected topics.
+
+### ImageHandler.gs
+Fetches relevant images from Pexels API based on the blog post content and keywords.
+
+### BloggerAPI.gs
+Manages authentication and communication with the Blogger API for publishing posts.
+
+### local.html
+A standalone HTML file that provides a user-friendly interface for creating blog posts. This can be hosted anywhere and connects directly to your deployed Apps Script endpoint.
